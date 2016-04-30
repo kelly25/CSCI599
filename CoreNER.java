@@ -9,6 +9,7 @@ import edu.stanford.nlp.ling.CoreLabel;
 import edu.stanford.nlp.ling.CoreAnnotations;
 import edu.stanford.nlp.sequences.DocumentReaderAndWriter;
 import edu.stanford.nlp.util.Triple;
+import org.apache.tika.Tika;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -26,7 +27,20 @@ public class CoreNER {
     static Set<String> time = new HashSet<>();
     static Set<String> percent = new HashSet<>();
     static Set<String> money = new HashSet<>();
-
+    static String getText(String filepath)
+    {
+        Tika tika=new Tika();
+        String text="";
+        try{
+            //get text content
+            text=tika.parseToString(new File("/Users/Kelly/Documents/E4ADA91966BD523EB8EA6DD9C2F18B1AE37A3F2C782F1AEA51CDDD72575BD9D6"));
+            System.out.println(text);
+        }catch (Exception e)
+        {
+            e.printStackTrace();
+        }
+        return text;
+    }
     static void getFiles(String filepath) {
         File root = new File(filepath);
         File[] files = root.listFiles();
@@ -58,37 +72,41 @@ public class CoreNER {
          to get the entities in the String with character offsets, and
          (3) how to run NER on a whole file (without loading it into a String).
       */
-        String path = "/Users/Kelly/Documents/test.txt";
-        String fileContents = IOUtils.slurpFile(path);
-        getFiles("/Users/Kelly/Documents/rawdata/kelly/application_xml/");
 
-        List<Triple<String, Integer, Integer>> list = classifier.classifyToCharacterOffsets(fileContents);
-        for (Triple<String, Integer, Integer> item : list) {
-            System.out.println(item.first() + ": " + fileContents.substring(item.second(), item.third()));
-            switch (item.first) {
-                case "PERSON":
-                    person.add(fileContents.substring(item.second(), item.third()));
-                    break;
-                case "ORGANIZATION":
-                    organization.add(fileContents.substring(item.second(), item.third()));
-                    break;
-                case "LOCATION":
-                    location.add(fileContents.substring(item.second(), item.third()));
-                    break;
-                case "MONEY":
-                    money.add(fileContents.substring(item.second(), item.third()));
-                    break;
-                case "PERCENT":
-                    percent.add(fileContents.substring(item.second(), item.third()));
-                    break;
-                case "DATE":
-                    date.add(fileContents.substring(item.second(), item.third()));
-                    break;
-                case "TIME":
-                    time.add(fileContents.substring(item.second(), item.third()));
-                    break;
+        getFiles("/Users/Kelly/Documents/rawdata/test/");
+        for (int i = 0; i < filelist.size(); i++) {
+            String path = filelist.get(i);
+            String fileContents = IOUtils.slurpFile(path);
+            //String fileContents=getText(path);
+            List<Triple<String, Integer, Integer>> list = classifier.classifyToCharacterOffsets(fileContents);
+            for (Triple<String, Integer, Integer> item : list) {
+                System.out.println(item.first() + ": " + fileContents.substring(item.second(), item.third()));
+                switch (item.first) {
+                    case "PERSON":
+                        person.add(fileContents.substring(item.second(), item.third()));
+                        break;
+                    case "ORGANIZATION":
+                        organization.add(fileContents.substring(item.second(), item.third()));
+                        break;
+                    case "LOCATION":
+                        location.add(fileContents.substring(item.second(), item.third()));
+                        break;
+                    case "MONEY":
+                        money.add(fileContents.substring(item.second(), item.third()));
+                        break;
+                    case "PERCENT":
+                        percent.add(fileContents.substring(item.second(), item.third()));
+                        break;
+                    case "DATE":
+                        date.add(fileContents.substring(item.second(), item.third()));
+                        break;
+                    case "TIME":
+                        time.add(fileContents.substring(item.second(), item.third()));
+                        break;
+                }
             }
         }
+
         System.out.println("hello");
 
 

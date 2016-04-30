@@ -198,7 +198,7 @@ public class OpenNLP {
         String organization_model = "/Users/Kelly/Downloads/en-ner-organization.bin";
         String percentage_model = "/Users/Kelly/Downloads/en-ner-percentage.bin";
         String time_model = "/Users/Kelly/Downloads/en-ner-time.bin";
-        getFiles("/Users/Kelly/Documents/rawdata/kelly/application_xml/");
+        getFiles("/Users/Kelly/Documents/rawdata/test/");
         //List< List<String>> res=new ArrayList<>();
         for (int i = 0; i < filelist.size(); i++) {
             //String content=readFile(filelist.get(i));
