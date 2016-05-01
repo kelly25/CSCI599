@@ -26,6 +26,19 @@ import java.util.*;
  * Created by Kelly on 16/4/30.
  */
 public class CompositeNERAgreementParser {
+    private static ArrayList<String> filelist = new ArrayList<>();
+    static void getFiles(String filepath) {
+        File root = new File(filepath);
+        File[] files = root.listFiles();
+        for (File file : files) {
+            if (file.getName().equals(".DS_Store"))
+                continue;
+            if (file.isDirectory())
+                getFiles(file.getAbsolutePath());
+            filelist.add(file.getAbsolutePath());
+        }
+
+    }
     private  String getText(String filepath) {
         Tika tika = new Tika();
         String text = "";
@@ -212,9 +225,9 @@ public class CompositeNERAgreementParser {
         }
         return res;
     }
-    private Map<String,Integer> combineMap(Map<String,Integer> map1,Map<String,Integer> map2)
+    private static Map<String,Integer> combineMap(Map<String,Integer> map1,Map<String,Integer> map2)
     {
-        Map<String,Integer> res=new HashMap<>();
+        /*Map<String,Integer> res=new HashMap<>();
         for(String tmp:map1.keySet())
         {
             if(map2.containsKey(tmp))
@@ -229,11 +242,64 @@ public class CompositeNERAgreementParser {
         {
             res.put(tmp,map2.get(tmp));
         }
-        return res;
+        return res;*/
+        for(String tmp:map2.keySet())
+        {
+            if(map1.containsKey(tmp))
+                map1.put(tmp,map1.get(tmp)+map2.get(tmp));
+            else
+                map1.put(tmp,map2.get(tmp));
+        }
+        return map1;
+    }
+    private static PriorityQueue<String> getMaxElement(Map<String,Integer> map,int num)
+    {
+        Comparator<String> Order=new Comparator<String>() {
+            //@Override
+            public int compare(String key1,String key2) {
+                int val1=map.get(key1);
+                int val2=map.get(key2);
+                if(val1>val2)
+                    return 1;
+                else if(val1<val2)
+                    return -1;
+                else
+                    return 0;
+            }
+        };
+        PriorityQueue<String> pq=new PriorityQueue<String>(num,Order);
+        for(String key:map.keySet())
+        {
+            pq.add(key);
+        }
+        for(int i=0;i<map.size()-num;i++)
+        {
+            pq.remove();
+        }
+        return pq;
     }
     public static void main(String[] args)throws Exception{
+        /*Map<String,Integer> map1=new HashMap<>();
+        //Map<String,Integer> map2=new HashMap<>();
+        map1.put("A",2);
+        map1.put("B",1);
+        map1.put("C",3);
+        map1.put("D",0);
+        PriorityQueue<String> pq1=getMaxElement(map1,2);
+        for(int i=0;i<map1.size()-2;i++)
+        {
+            pq1.remove();
+        }
+        pq1.remove();*/
+        getFiles("/Users/Kelly/Documents/test/");
         CompositeNERAgreementParser compositeNERAgreementParser=new CompositeNERAgreementParser();
-        Map<String,Integer> res=compositeNERAgreementParser.getCompositeAgreement("/Users/Kelly/Documents/test1.txt");
+        Map<String,Integer> res=compositeNERAgreementParser.getCompositeAgreement(filelist.get(0));
+        for(int i=1;i<filelist.size();i++)
+        {
+            Map<String,Integer> tmp=compositeNERAgreementParser.getCompositeAgreement(filelist.get(i));
+            compositeNERAgreementParser.combineMap(res,tmp);
+        }
+        PriorityQueue<String> pq=compositeNERAgreementParser.getMaxElement(res,10);
         System.out.print("hello");
     }
 }
